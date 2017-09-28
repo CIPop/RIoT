@@ -186,10 +186,10 @@ namespace RIoT
             serialNumber[0] &= 0x7F;
             certGen.SetSerialNumber(new BigInteger(serialNumber));
             // The important name-related stuff is encoded in the RIoT extension
-            certGen.SetIssuerDN(new X509Name($"CN=[I]DevID:{shortNameString}, O=MSR_TEST, C=US"));
+            certGen.SetIssuerDN(new X509Name($"CN=IssuerDevID{shortNameString}, O=MSR_TEST, C=US"));
             // test REMOVE
             //certGen.SetSubjectDN(name);
-            certGen.SetSubjectDN(new X509Name($"CN=[S]DevID:{shortNameString}, O=MSR_TEST, C=US"));
+            certGen.SetSubjectDN(new X509Name($"CN=SubjectDevID{shortNameString}, O=MSR_TEST, C=US"));
             certGen.SetNotBefore(now);
             certGen.SetNotAfter(now + new TimeSpan(365 * 10, 0, 0, 0, 0));
             certGen.SetPublicKey(aliasKey.Public);
@@ -278,6 +278,8 @@ namespace RIoT
                 {
                     ISignatureFactory signatureFactory = new Asn1SignatureFactory("SHA256WITHECDSA", lastKeyPair.Private, random);
                     certificate = certGen.Generate(signatureFactory);
+
+                    Helpers.WritePEMObject(ToPath("DeviceCAKey.pem"), lastKeyPair);
                 }
                 else
                 {
