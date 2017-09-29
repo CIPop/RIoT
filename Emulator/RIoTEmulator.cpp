@@ -337,6 +337,21 @@ CreateDeviceAuthBundle(
     WriteBinaryFile("R00tCrt.pem", (uint8_t *)PEM, length);
 #endif
 
+	// Copy Root Key Pair
+	length = sizeof(PEM);
+	DERInitContext(&derCtx, derBuffer, DER_MAX_TBS);
+	X509GetDEREcc(&derCtx, *((RIOT_ECC_PUBLIC *)&eccRootPubBytes), *((RIOT_ECC_PRIVATE *)eccRootPrivBytes));
+	DERtoPEM(&derCtx, ECC_PRIVATEKEY_TYPE, PEM, &length);
+
+#ifdef DEBUG
+	printf("\"root\" CA Key");
+	PrintHex(derCtx.Buffer, derCtx.Position);
+	PEM[length] = '\0'; // JUST FOR PRINTF
+	printf("%s", PEM);
+	WriteBinaryFile("R00tKey.der", derCtx.Buffer, derCtx.Position);
+	WriteBinaryFile("R00tKey.pem", (uint8_t *)PEM, length);
+#endif
+
     return 0;
 }
 

@@ -94,4 +94,7 @@
       <UniqueIdentifier>{07866156-20d9-4902-aaa5-670ac7865661}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="convertToWindows.cmd" />
+  </ItemGroup>
 </Project>
