@@ -186,10 +186,12 @@ namespace RIoT
             serialNumber[0] &= 0x7F;
             certGen.SetSerialNumber(new BigInteger(serialNumber));
             // The important name-related stuff is encoded in the RIoT extension
-            certGen.SetIssuerDN(new X509Name($"CN=IssuerDevID{shortNameString}, O=MSR_TEST, C=US"));
+            //certGen.SetIssuerDN(new X509Name($"CN=IssuerDevID{shortNameString}, O=MSR_TEST, C=US"));
+            certGen.SetIssuerDN(new X509Name($"CN=diceissuer, O=MSR_TEST, C=US"));
+
             // test REMOVE
             //certGen.SetSubjectDN(name);
-            certGen.SetSubjectDN(new X509Name($"CN=SubjectDevID{shortNameString}, O=MSR_TEST, C=US"));
+            certGen.SetSubjectDN(new X509Name($"CN=xdevice1, O=MSR_TEST, C=US"));
             certGen.SetNotBefore(now);
             certGen.SetNotAfter(now + new TimeSpan(365 * 10, 0, 0, 0, 0));
             certGen.SetPublicKey(aliasKey.Public);
@@ -197,7 +199,11 @@ namespace RIoT
             // Add the extensions (todo: not sure about KeyUsage.DigitalSiganture
             certGen.AddExtension(X509Extensions.ExtendedKeyUsage, true,
                 ExtendedKeyUsage.GetInstance(new DerSequence(KeyPurposeID.IdKPClientAuth)));
-            certGen.AddExtension(X509Extensions.KeyUsage, true, new KeyUsage(KeyUsage.DigitalSignature));
+
+
+            // TODO: not present in Emulator certificates.
+            // certGen.AddExtension(X509Extensions.KeyUsage, true, new KeyUsage(KeyUsage.DigitalSignature));
+
             AddRIoTExtension(certGen, fwid, devIdKey);
 
             // sign it
@@ -254,8 +260,8 @@ namespace RIoT
                 X509V3CertificateGenerator certGen = new X509V3CertificateGenerator();
                 certGen.SetSerialNumber(new BigInteger(new byte[] { 1, 2, 3, 4, 5 }));
                 var issuerDn = lastButOne ?
-                    new X509Name($"CN=Vendor Root CA O=MSR_TEST, C=US") :
-                    new X509Name($"CN=Vendor Intermediate CA {j}, O=MSR_TEST, C=US");
+                    new X509Name($"CN=CrisPop CA O=MSR_TEST, C=US") :
+                    new X509Name($"CN=CrisPop Interim CA {j}, O=MSR_TEST, C=US");
                 if (rootCert)
                 {
                     issuerDn = lastCertIssuer;
@@ -380,11 +386,14 @@ namespace RIoT
 
             Debug.WriteLine(Asn1Dump.DumpAsString(TaggedEncodedRIoTID));
 
-            certGen.AddExtension(
-                X509Extensions.SubjectAlternativeName.Id,
-                true,
-                new GeneralNames(
-                    new GeneralName(GeneralName.OtherName, TaggedEncodedRIoTID)));
+            // TODO: This is generating certificates that do not work with the service.
+
+            //certGen.AddExtension(
+            //    //X509Extensions.SubjectAlternativeName.Id,
+            //    Program.DeviceIdOid,
+            //    true,
+            //    new GeneralNames(
+            //        new GeneralName(GeneralName.OtherName, TaggedEncodedRIoTID)));
         }
 
 
